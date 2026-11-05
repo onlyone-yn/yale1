@@ -112,7 +112,7 @@ function rangeText() {
       if (!gon.length) return '';
       return gon.length === gp.length ? `${g} 전체` : `${g} ${gon.map((p) => p.part).join(', ')}`;
     }).filter(Boolean);
-    return { full: `${name} ${groups.join(' / ')}`, short: `${name} ${on.length}개 파트` };
+    return { full: `${name} ${groups.join(' / ')}`, short: `${name} ${on.length}개 지문` };
   }).filter(Boolean);
   if (perCat.length === CATS.length && perCat.every((x) => x.full.endsWith(' 전체') && x.full === x.short)) return '전체';
   const text = perCat.map((x) => x.full).join(' + ');
@@ -126,7 +126,7 @@ function updateCount() {
   syncGroupButtons();
   $('count').max = n;
   const c = +$('count').value;
-  $('countWarn').textContent = n === 0 ? '위에서 파트를 하나 이상 골라 주세요.'
+  $('countWarn').textContent = n === 0 ? '위에서 지문을 하나 이상 골라 주세요.'
     : c > n ? `선택한 단어가 ${n}개라서 ${n}개만 출제돼요.` : '';
 }
 
@@ -144,7 +144,7 @@ function syncGroupButtons() {
   CATS.forEach((_, c) => {
     const bs = boxesOf(partsOf(c).map((p) => p.id));
     const n = bs.filter((b) => b.checked).length;
-    $('catCount' + c).textContent = n ? `${n}개 파트 선택` : '';
+    $('catCount' + c).textContent = n ? `${n}개 지문 선택` : '';
     $('tabCount' + c).textContent = n || '';
     document.querySelector(`.cat-all[data-cat="${c}"]`).classList.toggle('on', n === bs.length);
   });
