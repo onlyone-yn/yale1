@@ -252,3 +252,13 @@ button { font-family: inherit; cursor: pointer; }
 .part input:checked + span { background: var(--bg-mid); border-color: var(--point); color: var(--accent); font-weight: 700; }
 .part input:focus-visible + span { outline: 2px solid var(--point); }
 .page-head h3 .range { font-size: 13pt; }
+
+/* 대표 사진 */
+.logo-photo {
+  width: 132px; height: 132px;
+  display: block; margin: 0 auto 6px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid var(--bg-mid);
+  box-shadow: 0 4px 14px rgba(46, 26, 92, .15);
+}
