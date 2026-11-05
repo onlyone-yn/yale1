@@ -304,7 +304,7 @@ async function showReviewImage(review, counts) {
 
 /* ---------- 시험지 만들기 ---------- */
 const TEST_PER_PAGE = 50;   // 2단 x 25줄
-const ANSWER_PER_PAGE = 60; // 2단 x 30줄
+const ANSWER_PER_PAGE = 50; // 2단 x 25줄 (시험지와 같게)
 
 function esc(s) {
   return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
