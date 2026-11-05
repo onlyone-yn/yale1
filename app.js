@@ -35,8 +35,12 @@ const groupsOf = (c) => [...new Set(PARTS.filter((p) => p.cat === c).map((p) => 
 const partsOf = (c, g) => PARTS.filter((p) => p.cat === c && (g === undefined || p.group === g));
 
 function fillDays() {
+  $('catTabs').innerHTML = CATS.map((name, c) => `
+    <button type="button" class="cat-tab cat-${c}" data-tab="${c}">
+      ${name} <span class="tab-count" id="tabCount${c}"></span>
+    </button>`).join('');
   $('partList').innerHTML = CATS.map((name, c) => `
-    <section class="cat-box cat-${c}">
+    <section class="cat-box cat-${c}" data-box="${c}">
       <div class="cat-head">
         <span class="cat-name">${name}</span>
         <span class="cat-count" id="catCount${c}"></span>
@@ -58,6 +62,16 @@ function fillDays() {
     </section>`).join('');
 }
 
+// 탭은 보이는 칸만 바꾸고, 다른 탭에서 고른 파트는 그대로 남는다
+function showTab(c) {
+  document.querySelectorAll('.cat-tab').forEach((t) => t.classList.toggle('active', +t.dataset.tab === c));
+  document.querySelectorAll('.cat-box').forEach((b) => b.classList.toggle('hidden', +b.dataset.box !== c));
+}
+$('catTabs').addEventListener('click', (e) => {
+  const t = e.target.closest('.cat-tab');
+  if (t) showTab(+t.dataset.tab);
+});
+
 const boxes = () => [...document.querySelectorAll('#partList input')];
 const boxesOf = (ids) => boxes().filter((b) => ids.includes(+b.value));
 function selected() {
@@ -66,6 +80,21 @@ function selected() {
 function setSelected(ids) {
   boxes().forEach((b) => (b.checked = ids.includes(+b.value)));
 }
+// 고른 파트들에서 골고루 뽑기:
+// 파트마다 단어를 섞어 두고, 파트를 돌아가며 한 개씩 꺼낸다.
+// 단어가 적은 파트가 먼저 바닥나면 남은 파트에서 계속 돌아가며 꺼낸다.
+function balancedSample(n) {
+  const ids = shuffle(selected());
+  const queues = ids.map((id) => shuffle(WORDS.filter((w) => w[0] === id)));
+  const out = [];
+  while (out.length < n && queues.some((q) => q.length)) {
+    for (const q of queues) {
+      if (q.length && out.length < n) out.push(q.pop());
+    }
+  }
+  return shuffle(out);
+}
+
 function pool() {
   const ids = new Set(selected());
   return WORDS.filter((w) => ids.has(w[0]));
@@ -116,6 +145,7 @@ function syncGroupButtons() {
     const bs = boxesOf(partsOf(c).map((p) => p.id));
     const n = bs.filter((b) => b.checked).length;
     $('catCount' + c).textContent = n ? `${n}개 파트 선택` : '';
+    $('tabCount' + c).textContent = n || '';
     document.querySelector(`.cat-all[data-cat="${c}"]`).classList.toggle('on', n === bs.length);
   });
 }
@@ -242,7 +272,7 @@ function showResult() {
   show('result');
 }
 
-$('startTest').addEventListener('click', () => startQuiz(shuffle(pool()).slice(0, wantedCount())));
+$('startTest').addEventListener('click', () => startQuiz(balancedSample(wantedCount())));
 $('retryReview').addEventListener('click', () => startQuiz(shuffle(quiz.review)));
 $('goHome').addEventListener('click', () => show('home'));
 
@@ -267,7 +297,7 @@ function pageHead(kind, total) {
   return `
     <div class="page-head">
       <div class="title-row">
-        <h3>Self-Check <span class="range">${esc(rangeText())}</span></h3>
+        <h3>Self-Check</h3>
         <span class="tag">${kind === 'test' ? '시험지' : '답안지'}</span>
       </div>
       <div class="info-row">
@@ -297,7 +327,7 @@ function buildPages(words, kind) {
 }
 
 function makeSheet() {
-  const words = shuffle(pool()).slice(0, wantedCount());
+  const words = balancedSample(wantedCount());
   $('pages').innerHTML = buildPages(words, 'test') + buildPages(words, 'answer');
   show('sheet');
 }
@@ -342,6 +372,7 @@ $('printBtn').addEventListener('click', () => {
 });
 
 fillDays();
+showTab(0);
 updateCount();
 
 // 주소에 시험지 정보가 있으면 (다른 브라우저로 넘어온 경우) 바로 시험지를 연다

@@ -233,7 +233,6 @@ button { font-family: inherit; cursor: pointer; }
 
 /* 파트 고르기 */
 .part-tools { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-.part-tools .hint { margin: 0; font-size: 13px; }
 .part-tools .chip { flex: none; }
 
 /* 종류별 칸: 동반의어(진보라) / 기본 단어(연보라) */
@@ -288,3 +287,20 @@ button { font-family: inherit; cursor: pointer; }
   border: 4px solid var(--bg-mid);
   box-shadow: 0 4px 14px rgba(46, 26, 92, .15);
 }
+
+/* 동반의어 / 기본 단어 탭 */
+.cat-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+.cat-tab {
+  border: 2px solid var(--bg-mid); background: #fff; color: var(--sub);
+  border-radius: 12px; padding: 8px 14px; font-size: 15px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+}
+.cat-tab.active.cat-0 { background: var(--bg-mid); border-color: var(--point); color: var(--dark); }
+.cat-tab.active.cat-1 { background: var(--dark); border-color: var(--dark); color: #fff; }
+.tab-count:empty { display: none; }
+.tab-count {
+  min-width: 20px; height: 20px; padding: 0 6px; border-radius: 10px;
+  background: var(--accent); color: #fff; font-size: 12px; line-height: 20px; text-align: center;
+}
+.cat-tab.active.cat-1 .tab-count { background: var(--point); color: var(--dark); }
+.tab-hint { margin: 0; font-size: 13px; }
