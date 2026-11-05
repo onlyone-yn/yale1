@@ -328,3 +328,6 @@ button { font-family: inherit; cursor: pointer; }
   font-display: swap;
 }
 .hero h1, .hero .sub-title { font-family: "Cafe24Ssurround", "Noto Sans KR", sans-serif; font-weight: 700; letter-spacing: 0; }
+
+/* 시험지·답안지 머리글도 카페24 써라운드 */
+.page-head h3 { font-family: "Cafe24Ssurround", "Noto Sans KR", sans-serif; font-weight: 700; }
