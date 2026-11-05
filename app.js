@@ -272,18 +272,35 @@ function showResult() {
     $('reviewList').append(tr);
   }
   show('result');
+  showReviewImage(review, quiz.counts);
 }
 
 $('startTest').addEventListener('click', () => startQuiz(balancedSample(wantedCount())));
 $('retryReview').addEventListener('click', () => startQuiz(shuffle(quiz.review)));
 $('goHome').addEventListener('click', () => show('home'));
-$('saveImgBtn').addEventListener('click', () => {
+// 결과를 이미지로 그려서 결과 화면에 바로 보여준다 (꾹 눌러 저장)
+let imgJob = 0;
+async function showReviewImage(review, counts) {
+  const job = ++imgJob;
+  $('resultSummary').classList.remove('hidden');
+  $('reviewWrap').classList.toggle('hidden', review.length === 0);
+  $('reviewImgWrap').classList.add('hidden');
+  if (!review.length) return;
   const hasCat = typeof CATS !== 'undefined' && typeof catOf === 'function';
-  const rows = quiz.reviewMarks.map((m) => ({
+  const rows = review.map((m) => ({
     kind: m.kind, en: m.word[1], ko: m.word[2], cat: hasCat ? CATS[catOf(m.word[0])] : '',
   }));
-  openReviewImage(rows, quiz.counts);
-});
+  try {
+    const cv = await drawReviewImage(rows, counts);
+    if (job !== imgJob) return; // 그사이 다른 결과로 바뀌었으면 버린다
+    $('reviewImg').src = cv.toDataURL('image/png');
+    $('resultSummary').classList.add('hidden');
+    $('reviewWrap').classList.add('hidden');
+    $('reviewImgWrap').classList.remove('hidden');
+  } catch (e) {
+    // 이미지를 못 만들면 원래 목록을 그대로 보여준다
+  }
+}
 
 /* ---------- 시험지 만들기 ---------- */
 const TEST_PER_PAGE = 50;   // 2단 x 25줄

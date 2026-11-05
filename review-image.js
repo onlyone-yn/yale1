@@ -1,4 +1,4 @@
-/* 카드 테스트 결과(틀린 단어 · 헷갈린 단어)를 이미지로 만들어 저장 / 공유한다.
+/* 카드 테스트 결과(틀린 단어 · 헷갈린 단어)를 이미지로 그린다. 결과 화면에서 꾹 눌러 저장.
    - 사이트마다 index.html 에서 SITE_TITLE, SITE_SUB 를 정한다.
    - 그림은 canvas 에 직접 그려서 기기마다 똑같이 나오게 한다. */
 
@@ -149,45 +149,3 @@ async function drawReviewImage(rows, counts) {
   return cv;
 }
 
-/* ---------- 저장 창 ---------- */
-let riFile = null;
-
-async function openReviewImage(rows, counts) {
-  const btn = $('saveImgBtn');
-  btn.disabled = true; btn.textContent = '이미지 만드는 중…';
-  try {
-    const cv = await drawReviewImage(rows, counts);
-    const blob = await new Promise((res) => cv.toBlob(res, 'image/png'));
-    const d = new Date();
-    riFile = new File([blob], `다시볼단어_${d.getMonth() + 1}월${d.getDate()}일.png`, { type: 'image/png' });
-    $('imgPreview').src = cv.toDataURL('image/png'); // 길게 눌러 저장할 수 있게 data 주소로
-    $('imgModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-  } finally {
-    btn.disabled = false; btn.textContent = '📷 이미지로 저장';
-  }
-}
-
-function closeReviewImage() {
-  $('imgModal').classList.add('hidden');
-  document.body.style.overflow = '';
-}
-
-async function saveReviewImage() {
-  if (!riFile) return;
-  // 휴대폰: 공유 창 → "이미지 저장" 또는 카톡으로 보내기
-  if (navigator.canShare && navigator.canShare({ files: [riFile] })) {
-    try { await navigator.share({ files: [riFile] }); return; }
-    catch (e) { if (e.name === 'AbortError') return; }
-  }
-  // 컴퓨터: 파일로 내려받기
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(riFile);
-  a.download = riFile.name;
-  document.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
-}
-
-$('imgClose').addEventListener('click', closeReviewImage);
-$('imgSave').addEventListener('click', saveReviewImage);
-$('imgModal').addEventListener('click', (e) => { if (e.target.id === 'imgModal') closeReviewImage(); });
