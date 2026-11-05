@@ -10,28 +10,28 @@
 <!-- 수정할 때마다 아래 파일 주소의 ?v= 값을 바꿔야 휴대폰에서도 바로 새 버전이 보인다 -->
 <meta http-equiv="Cache-Control" content="no-cache">
 <title>예일1 단어 테스트</title>
-<link rel="icon" href="icon.png?v=20261105c" type="image/png">
-<link rel="apple-touch-icon" href="icon.png?v=20261105c">
+<link rel="icon" href="icon.png?v=20261105d" type="image/png">
+<link rel="apple-touch-icon" href="icon.png?v=20261105d">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261105c">
+<link rel="stylesheet" href="style.css?v=20261105d">
 </head>
 <body>
 
 <!-- 1. 시작 화면 -->
 <section id="home" class="screen">
   <header class="hero">
-    <img class="logo-photo" src="hero.jpg?v=20261105c" alt="">
+    <img class="logo-photo" src="hero.jpg?v=20261105d" alt="">
     <h1>예일1</h1>
-    <p class="sub-title">빠바 동반의어 단어 테스트</p>
+    <p class="sub-title">빠바 동반의어 · 기본 단어 테스트</p>
     <p class="desc">파트를 고르고 카드 테스트를 하거나 시험지를 만들어 보세요.</p>
   </header>
 
   <div class="card">
     <h2><span class="step">01</span> 파트 선택</h2>
     <div class="part-tools">
-      <button type="button" class="chip" id="selAll">모두 선택</button>
+      <span class="hint">동반의어와 기본 단어는 따로 골라요. 함께 골라도 돼요.</span>
       <button type="button" class="chip" id="selNone">모두 해제</button>
     </div>
     <div id="partList"></div>
@@ -68,6 +68,7 @@
   <div class="bar"><div id="progressBar"></div></div>
 
   <div id="flashcard" class="flashcard" tabindex="0">
+    <div id="qCat" class="card-cat"></div>
     <div id="qWord" class="word"></div>
     <div id="qMeaning" class="meaning hidden"></div>
     <div id="tapHint" class="tap-hint">뜻을 떠올린 뒤 눌러서 확인하세요</div>
@@ -118,7 +119,7 @@
   <div id="pages"></div>
 </section>
 
-<script src="words.js?v=20261105c"></script>
-<script src="app.js?v=20261105c"></script>
+<script src="words.js?v=20261105d"></script>
+<script src="app.js?v=20261105d"></script>
 </body>
 </html>

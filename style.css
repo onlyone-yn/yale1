@@ -232,7 +232,33 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 /* 파트 고르기 */
-.part-tools { display: flex; gap: 8px; margin-bottom: 12px; }
+.part-tools { display: flex; gap: 8px; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.part-tools .hint { margin: 0; font-size: 13px; }
+.part-tools .chip { flex: none; }
+
+/* 종류별 칸: 동반의어(진보라) / 기본 단어(연보라) */
+.cat-box { border: 2px solid var(--point); border-radius: 14px; overflow: hidden; margin-bottom: 14px; }
+.cat-box.cat-1 { border-color: var(--sub); }
+.cat-head { display: flex; align-items: center; gap: 8px; padding: 10px 12px; background: var(--bg-mid); }
+.cat-box.cat-1 .cat-head { background: var(--dark); }
+.cat-name { font-weight: 800; font-size: 16px; color: var(--dark); }
+.cat-box.cat-1 .cat-name { color: #fff; }
+.cat-count { flex: 1; font-size: 13px; color: var(--sub); }
+.cat-box.cat-1 .cat-count { color: var(--point); }
+.cat-all {
+  border: 1px solid var(--accent); background: #fff; color: var(--accent);
+  border-radius: 14px; padding: 4px 12px; font-size: 13px; font-weight: 700;
+}
+.cat-all.on { background: var(--accent); color: #fff; }
+.cat-box.cat-1 .cat-all { border-color: var(--point); }
+.cat-box.cat-1 .cat-all.on { background: var(--point); color: var(--dark); }
+.cat-body { padding: 10px 12px; }
+.cat-box.cat-1 .part input:checked + span { background: var(--dark); border-color: var(--dark); color: #fff; }
+.cat-box.cat-1 .pg-all.on { background: var(--dark); border-color: var(--dark); }
+
+/* 카드에 종류 표시 */
+.card-cat { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 12px; margin-bottom: 14px; background: var(--bg-mid); color: var(--accent); }
+.card-cat.cat-1 { background: var(--dark); color: #fff; }
 .part-group { padding: 10px 0; border-top: 1px solid var(--line); }
 .part-group:first-child { border-top: none; padding-top: 0; }
 .pg-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }

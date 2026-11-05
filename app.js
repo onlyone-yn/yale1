@@ -1,7 +1,8 @@
 // WORDS: [day, 영어, 한글 뜻] 목록 (words.js)
 const $ = (id) => document.getElementById(id);
 const DAYS = [...new Set(WORDS.map((w) => w[0]))].sort((a, b) => a - b);
-const dayLabel = (d) => GROUPS[d - 1]; // 항목 이름 (words.js)
+const dayLabel = (d) => GROUPS[d - 1][1]; // 파트 이름 (words.js)
+const catOf = (d) => GROUPS[d - 1][0];      // 0: 동반의어, 1: 기본 단어
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -18,29 +19,47 @@ function show(id) {
 }
 
 /* ---------- 시작 화면: 파트 고르기 ---------- */
-// 항목 이름 "2-3 기출예제1번" → 묶음 "2-3", 파트 "기출예제1번"
+// 종류(동반의어 / 기본 단어)마다 칸을 따로 만들고,
+// 파트 이름 "2-3 기출예제1번" → 묶음 "2-3", 파트 "기출예제1번"
 const PARTS = DAYS.map((d) => {
   const name = dayLabel(d);
   const i = name.indexOf(' ');
-  return { id: d, group: i > 0 ? name.slice(0, i) : name, part: i > 0 ? name.slice(i + 1) : name };
+  return {
+    id: d,
+    cat: catOf(d),
+    group: i > 0 ? name.slice(0, i) : name,
+    part: i > 0 ? name.slice(i + 1) : name,
+  };
 });
-const GROUP_NAMES = [...new Set(PARTS.map((p) => p.group))];
+const groupsOf = (c) => [...new Set(PARTS.filter((p) => p.cat === c).map((p) => p.group))];
+const partsOf = (c, g) => PARTS.filter((p) => p.cat === c && (g === undefined || p.group === g));
 
 function fillDays() {
-  $('partList').innerHTML = GROUP_NAMES.map((g) => `
-    <div class="part-group">
-      <div class="pg-head">
-        <span class="pg-name">${g}</span>
-        <button type="button" class="pg-all" data-group="${g}">전체</button>
+  $('partList').innerHTML = CATS.map((name, c) => `
+    <section class="cat-box cat-${c}">
+      <div class="cat-head">
+        <span class="cat-name">${name}</span>
+        <span class="cat-count" id="catCount${c}"></span>
+        <button type="button" class="cat-all" data-cat="${c}">전체</button>
       </div>
-      <div class="pg-parts">
-        ${PARTS.filter((p) => p.group === g).map((p) => `
-          <label class="part"><input type="checkbox" value="${p.id}"><span>${p.part}</span></label>`).join('')}
+      <div class="cat-body">
+        ${groupsOf(c).map((g) => `
+          <div class="part-group">
+            <div class="pg-head">
+              <span class="pg-name">${g}</span>
+              <button type="button" class="pg-all" data-cat="${c}" data-group="${g}">전체</button>
+            </div>
+            <div class="pg-parts">
+              ${partsOf(c, g).map((p) => `
+                <label class="part"><input type="checkbox" value="${p.id}"><span>${p.part}</span></label>`).join('')}
+            </div>
+          </div>`).join('')}
       </div>
-    </div>`).join('');
+    </section>`).join('');
 }
 
 const boxes = () => [...document.querySelectorAll('#partList input')];
+const boxesOf = (ids) => boxes().filter((b) => ids.includes(+b.value));
 function selected() {
   return boxes().filter((b) => b.checked).map((b) => +b.value);
 }
@@ -51,18 +70,24 @@ function pool() {
   const ids = new Set(selected());
   return WORDS.filter((w) => ids.has(w[0]));
 }
-// 시험지 머리글에 쓸 범위 글자: "2-3 전체 / 미니3회 1번, 3번"
+// 시험지 머리글에 쓸 범위 글자: "동반의어 2-3 전체 / 미니3회 1번 + 기본 단어 전체"
 function rangeText() {
   const ids = new Set(selected());
-  if (ids.size === PARTS.length) return '전체';
-  const parts = GROUP_NAMES.map((g) => {
-    const all = PARTS.filter((p) => p.group === g);
+  const perCat = CATS.map((name, c) => {
+    const all = partsOf(c);
     const on = all.filter((p) => ids.has(p.id));
-    if (!on.length) return '';
-    return on.length === all.length ? `${g} 전체` : `${g} ${on.map((p) => p.part).join(', ')}`;
+    if (!on.length) return null;
+    if (on.length === all.length) return { full: `${name} 전체`, short: `${name} 전체` };
+    const groups = groupsOf(c).map((g) => {
+      const gp = partsOf(c, g), gon = gp.filter((p) => ids.has(p.id));
+      if (!gon.length) return '';
+      return gon.length === gp.length ? `${g} 전체` : `${g} ${gon.map((p) => p.part).join(', ')}`;
+    }).filter(Boolean);
+    return { full: `${name} ${groups.join(' / ')}`, short: `${name} ${on.length}개 파트` };
   }).filter(Boolean);
-  const text = parts.join(' / ');
-  return text.length > 55 ? `${ids.size}개 파트` : text;
+  if (perCat.length === CATS.length && perCat.every((x) => x.full.endsWith(' 전체') && x.full === x.short)) return '전체';
+  const text = perCat.map((x) => x.full).join(' + ');
+  return text.length > 55 ? perCat.map((x) => x.short).join(' + ') : text;
 }
 
 function updateCount() {
@@ -84,20 +109,28 @@ function wantedCount() {
 
 function syncGroupButtons() {
   document.querySelectorAll('.pg-all').forEach((btn) => {
-    const bs = boxes().filter((b) => PARTS[+b.value - 1].group === btn.dataset.group);
+    const bs = boxesOf(partsOf(+btn.dataset.cat, btn.dataset.group).map((p) => p.id));
     btn.classList.toggle('on', bs.every((b) => b.checked));
   });
+  CATS.forEach((_, c) => {
+    const bs = boxesOf(partsOf(c).map((p) => p.id));
+    const n = bs.filter((b) => b.checked).length;
+    $('catCount' + c).textContent = n ? `${n}개 파트 선택` : '';
+    document.querySelector(`.cat-all[data-cat="${c}"]`).classList.toggle('on', n === bs.length);
+  });
 }
-$('partList').addEventListener('change', updateCount);
-$('partList').addEventListener('click', (e) => {
-  const btn = e.target.closest('.pg-all');
-  if (!btn) return;
-  const bs = boxes().filter((b) => PARTS[+b.value - 1].group === btn.dataset.group);
+function toggleAll(bs) {
   const turnOn = !bs.every((b) => b.checked);
   bs.forEach((b) => (b.checked = turnOn));
   updateCount();
+}
+$('partList').addEventListener('change', updateCount);
+$('partList').addEventListener('click', (e) => {
+  const g = e.target.closest('.pg-all');
+  if (g) return toggleAll(boxesOf(partsOf(+g.dataset.cat, g.dataset.group).map((p) => p.id)));
+  const c = e.target.closest('.cat-all');
+  if (c) return toggleAll(boxesOf(partsOf(+c.dataset.cat).map((p) => p.id)));
 });
-$('selAll').addEventListener('click', () => { setSelected(DAYS); updateCount(); });
 $('selNone').addEventListener('click', () => { setSelected([]); updateCount(); });
 $('count').addEventListener('input', updateCount);
 document.querySelectorAll('.chip[data-n]').forEach((b) =>
@@ -129,6 +162,8 @@ function renderCard() {
   quiz.revealed = false;
   $('progressText').textContent = `${quiz.i + 1} / ${total}`;
   $('progressBar').style.width = (quiz.i / total) * 100 + '%';
+  $('qCat').textContent = CATS[catOf(w[0])];
+  $('qCat').className = 'card-cat cat-' + catOf(w[0]);
   $('qWord').textContent = w[1];
   $('qMeaning').textContent = w[2];
   $('qMeaning').classList.add('hidden');
