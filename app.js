@@ -255,6 +255,8 @@ function showResult() {
   // 틀린 단어 먼저, 그다음 헷갈린 단어
   const review = [...quiz.marks.filter((m) => m.kind === 'bad'), ...quiz.marks.filter((m) => m.kind === 'save')];
   quiz.review = review.map((m) => m.word);
+  quiz.reviewMarks = review;
+  quiz.counts = { good, save, bad };
   $('reviewWrap').classList.toggle('hidden', review.length === 0);
   $('retryReview').classList.toggle('hidden', review.length === 0);
   $('reviewCount').textContent = `${review.length}개`;
@@ -275,6 +277,13 @@ function showResult() {
 $('startTest').addEventListener('click', () => startQuiz(balancedSample(wantedCount())));
 $('retryReview').addEventListener('click', () => startQuiz(shuffle(quiz.review)));
 $('goHome').addEventListener('click', () => show('home'));
+$('saveImgBtn').addEventListener('click', () => {
+  const hasCat = typeof CATS !== 'undefined' && typeof catOf === 'function';
+  const rows = quiz.reviewMarks.map((m) => ({
+    kind: m.kind, en: m.word[1], ko: m.word[2], cat: hasCat ? CATS[catOf(m.word[0])] : '',
+  }));
+  openReviewImage(rows, quiz.counts);
+});
 
 /* ---------- 시험지 만들기 ---------- */
 const TEST_PER_PAGE = 50;   // 2단 x 25줄
