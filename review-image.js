@@ -1,5 +1,5 @@
 /* 카드 테스트 결과(틀린 단어 · 헷갈린 단어)를 이미지로 그린다. 결과 화면에서 꾹 눌러 저장.
-   - 사이트마다 index.html 에서 SITE_TITLE, SITE_SUB (필요하면 SITE_TITLE_FONT) 를 정한다.
+   - 사이트마다 index.html 에서 SITE_TITLE, SITE_SUB (필요하면 SITE_TITLE_FONT, SITE_TITLE_PARTS) 를 정한다.
    - 그림은 canvas 에 직접 그려서 기기마다 똑같이 나오게 한다. */
 
 const RI = {
@@ -94,7 +94,21 @@ async function drawReviewImage(rows, counts) {
   ctx.textAlign = 'center';
   ctx.fillStyle = c.dark;
   ctx.font = window.SITE_TITLE_FONT ? `700 54px ${window.SITE_TITLE_FONT}, ${RI.font}` : F(800, 52);
-  ctx.fillText(window.SITE_TITLE || '단어 테스트', W / 2, 56);
+  if (window.SITE_TITLE_PARTS) {
+    // 글자마다 색을 다르게: [['BLOOM', '#B39DDB'], ['ing Camp', '#2E1A5C']]
+    const parts = window.SITE_TITLE_PARTS;
+    const total = parts.reduce((s, [t]) => s + ctx.measureText(t).width, 0);
+    let x = W / 2 - total / 2;
+    ctx.textAlign = 'left';
+    for (const [t, color] of parts) {
+      ctx.fillStyle = color;
+      ctx.fillText(t, x, 56);
+      x += ctx.measureText(t).width;
+    }
+    ctx.textAlign = 'center';
+  } else {
+    ctx.fillText(window.SITE_TITLE || '단어 테스트', W / 2, 56);
+  }
   ctx.fillStyle = c.sub;
   ctx.font = window.SITE_TITLE_FONT ? `700 30px ${window.SITE_TITLE_FONT}, ${RI.font}` : F(700, 30);
   const d = new Date();
