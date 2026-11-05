@@ -304,3 +304,6 @@ button { font-family: inherit; cursor: pointer; }
 }
 .cat-tab.active.cat-1 .tab-count { background: var(--point); color: var(--dark); }
 .tab-hint { margin: 0; font-size: 13px; }
+
+/* 제목 양옆 하트 */
+.heart { font-size: .6em; vertical-align: .15em; }
