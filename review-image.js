@@ -63,7 +63,7 @@ async function drawReviewImage(rows, counts) {
 
   const { W, PAD, c } = RI;
   const cardX = PAD, cardW = W - PAD * 2, inX = cardX + 40, inW = cardW - 80;
-  const enW = 300, koX = inX + 96 + enW + 24, koW = inX + inW - koX;
+  const TAGW = 64, enW = 320, koX = inX + TAGW + enW + 24, koW = inX + inW - koX;
   const F = (w, s) => `${w} ${s}px ${RI.font}`;
 
   // 1) 높이 계산용으로 줄바꿈부터 한다
@@ -100,9 +100,9 @@ async function drawReviewImage(rows, counts) {
 
   // 맞음 / 헷갈림 / 틀림
   const boxes = [
-    ['맞음', counts.good, c.good, c.goodBg],
-    ['헷갈림', counts.save, c.accent, c.mid],
-    ['틀림', counts.bad, c.bad, c.badBg],
+    ['⭕ 맞음', counts.good, c.good, c.goodBg],
+    ['⭐ 헷갈림', counts.save, c.accent, c.mid],
+    ['❌ 틀림', counts.bad, c.bad, c.badBg],
   ];
   const bw = (cardW - 32) / 3;
   boxes.forEach(([label, n, fg, bg], i) => {
@@ -126,21 +126,19 @@ async function drawReviewImage(rows, counts) {
   let y = top + 100;
   laid.forEach((r, idx) => {
     const bad = r.kind === 'bad';
-    // 표시: 틀림 / 헷갈림
-    riRound(ctx, inX, y + 4, 80, 40, 20, bad ? c.badBg : c.mid);
-    ctx.textAlign = 'center';
-    ctx.fillStyle = bad ? c.bad : c.accent; ctx.font = F(700, 22);
-    ctx.fillText(bad ? '틀림' : '헷갈림', inX + 40, y + 12);
+    // 표시: ❌ 틀림 / ⭐ 헷갈림 (결과 화면과 같은 이모지)
     ctx.textAlign = 'left';
+    ctx.font = F(400, 34);
+    ctx.fillText(bad ? '❌' : '⭐', inX, y + 2);
     // 영어 (+ 종류)
     let ey = y;
     if (r.cat) {
       ctx.fillStyle = c.sub; ctx.font = F(700, 22);
-      ctx.fillText(r.cat, inX + 96, ey + 2);
+      ctx.fillText(r.cat, inX + TAGW, ey + 2);
       ey += 34;
     }
     ctx.fillStyle = c.dark; ctx.font = F(700, 34);
-    r.enLines.forEach((t, i) => ctx.fillText(t, inX + 96, ey + i * 44));
+    r.enLines.forEach((t, i) => ctx.fillText(t, inX + TAGW, ey + i * 44));
     // 뜻
     ctx.fillStyle = c.text; ctx.font = F(400, 30);
     r.koLines.forEach((t, i) => ctx.fillText(t, koX, y + 4 + i * 42));
