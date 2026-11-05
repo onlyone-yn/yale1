@@ -319,3 +319,6 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 2px 12px rgba(46, 26, 92, .08); margin-bottom: 16px;
   -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto;
 }
+
+/* 제목 글꼴: 검은고딕 (Black Han Sans, 무료 구글 글꼴) */
+.hero h1 { font-family: "Black Han Sans", "Noto Sans KR", sans-serif; font-weight: 400; letter-spacing: 0; }
