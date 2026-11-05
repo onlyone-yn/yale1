@@ -320,5 +320,11 @@ button { font-family: inherit; cursor: pointer; }
   -webkit-touch-callout: default; -webkit-user-select: auto; user-select: auto;
 }
 
-/* 제목 글꼴: 검은고딕 (Black Han Sans, 무료 구글 글꼴) */
-.hero h1 { font-family: "Black Han Sans", "Noto Sans KR", sans-serif; font-weight: 400; letter-spacing: 0; }
+/* 제목·부제목 글꼴: 카페24 써라운드 (fonts 폴더) */
+@font-face {
+  font-family: "Cafe24Ssurround";
+  src: url("fonts/Cafe24Ssurround.woff2") format("woff2"), url("fonts/Cafe24Ssurround.woff") format("woff");
+  font-weight: 700;
+  font-display: swap;
+}
+.hero h1, .hero .sub-title { font-family: "Cafe24Ssurround", "Noto Sans KR", sans-serif; font-weight: 700; letter-spacing: 0; }

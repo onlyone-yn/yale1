@@ -58,7 +58,7 @@ async function drawReviewImage(rows, counts) {
       document.fonts.load(`800 40px ${RI.font}`),
       document.fonts.load(`700 40px ${RI.font}`),
       document.fonts.load(`400 40px ${RI.font}`),
-      window.SITE_TITLE_FONT ? document.fonts.load(`400 40px ${window.SITE_TITLE_FONT}`) : null,
+      window.SITE_TITLE_FONT ? document.fonts.load(`700 40px ${window.SITE_TITLE_FONT}`) : null,
     ]);
   } catch (e) { /* 글꼴을 못 불러와도 기본 글꼴로 그린다 */ }
 
@@ -93,9 +93,10 @@ async function drawReviewImage(rows, counts) {
   // 머리글
   ctx.textAlign = 'center';
   ctx.fillStyle = c.dark;
-  ctx.font = window.SITE_TITLE_FONT ? `400 54px ${window.SITE_TITLE_FONT}, ${RI.font}` : F(800, 52);
+  ctx.font = window.SITE_TITLE_FONT ? `700 54px ${window.SITE_TITLE_FONT}, ${RI.font}` : F(800, 52);
   ctx.fillText(window.SITE_TITLE || '단어 테스트', W / 2, 56);
-  ctx.fillStyle = c.sub; ctx.font = F(700, 30);
+  ctx.fillStyle = c.sub;
+  ctx.font = window.SITE_TITLE_FONT ? `700 30px ${window.SITE_TITLE_FONT}, ${RI.font}` : F(700, 30);
   const d = new Date();
   const date = `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`;
   ctx.fillText(`${window.SITE_SUB || '카드 테스트'} · ${date}`, W / 2, 128);
