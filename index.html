@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- 검색엔진(구글, 네이버 등)에 노출되지 않도록 설정 -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+<meta name="Yeti" content="noindex, nofollow">
+<!-- 수정할 때마다 아래 파일 주소의 ?v= 값을 바꿔야 휴대폰에서도 바로 새 버전이 보인다 -->
+<meta http-equiv="Cache-Control" content="no-cache">
+<title>예일1 단어 테스트</title>
+<link rel="icon" href="flower.svg?v=20261105a" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=20261105a">
+</head>
+<body>
+
+<!-- 1. 시작 화면 -->
+<section id="home" class="screen">
+  <header class="hero">
+    <img class="logo" src="flower.svg?v=20261105a" alt="">
+    <h1>예일1</h1>
+    <p class="sub-title">빠바 동반의어 단어 테스트</p>
+    <p class="desc">범위를 고르고 카드 테스트를 하거나 시험지를 만들어 보세요.</p>
+  </header>
+
+  <div class="card">
+    <h2><span class="step">01</span> 범위 선택</h2>
+    <div class="range-row">
+      <label>시작 <select id="dayFrom"></select></label>
+      <label>끝 <select id="dayTo"></select></label>
+    </div>
+    <p class="hint">선택된 단어: <b id="poolCount">0</b>개</p>
+
+    <h2><span class="step">02</span> 문제 개수</h2>
+    <div class="row">
+      <div class="stepper">
+        <button class="step-btn" data-d="-10">−10</button>
+        <input id="count" type="number" min="1" value="20" inputmode="numeric">
+        <button class="step-btn" data-d="10">+10</button>
+      </div>
+      <div class="presets">
+        <button class="chip" data-n="50">50</button>
+        <button class="chip" data-n="100">100</button>
+        <button class="chip" id="allBtn">전체</button>
+      </div>
+    </div>
+    <p class="hint warn" id="countWarn"></p>
+  </div>
+
+  <div class="actions">
+    <button id="startTest" class="btn primary">🃏 카드 테스트</button>
+    <button id="makeSheet" class="btn secondary">🖨️ 시험지 만들기</button>
+  </div>
+</section>
+
+<!-- 2. 카드 테스트 -->
+<section id="quiz" class="screen hidden">
+  <div class="quiz-top">
+    <button class="link" id="quitQuiz">← 그만하기</button>
+    <span id="progressText"></span>
+  </div>
+  <div class="bar"><div id="progressBar"></div></div>
+
+  <div id="flashcard" class="flashcard" tabindex="0">
+    <div id="qWord" class="word"></div>
+    <div id="qMeaning" class="meaning hidden"></div>
+    <div id="tapHint" class="tap-hint">뜻을 떠올린 뒤 눌러서 확인하세요</div>
+  </div>
+
+  <button id="revealBtn" class="btn primary wide">정답 보기</button>
+  <div id="markBtns" class="mark-btns hidden">
+    <button class="btn mark good" data-mark="good">⭕ 맞았어요</button>
+    <button class="btn mark save" data-mark="save">⭐ 헷갈려요</button>
+    <button class="btn mark bad" data-mark="bad">❌ 틀렸어요</button>
+  </div>
+</section>
+
+<!-- 3. 결과 -->
+<section id="result" class="screen hidden">
+  <div class="card center">
+    <h2>테스트 결과</h2>
+    <p class="hint" id="totalText"></p>
+    <div class="tally">
+      <div class="t good"><span>⭕ 맞음</span><b id="cntGood"></b></div>
+      <div class="t save"><span>⭐ 헷갈림</span><b id="cntSave"></b></div>
+      <div class="t bad"><span>❌ 틀림</span><b id="cntBad"></b></div>
+    </div>
+    <p id="perfectMsg" class="hint hidden">모두 맞혔어요! 🎉</p>
+  </div>
+  <div id="reviewWrap" class="card">
+    <h2>다시 볼 단어 <span class="muted" id="reviewCount"></span></h2>
+    <table class="review-table">
+      <tbody id="reviewList"></tbody>
+    </table>
+  </div>
+  <div class="actions">
+    <button id="retryReview" class="btn primary">다시 볼 단어만 테스트</button>
+    <button id="goHome" class="btn secondary">처음으로</button>
+  </div>
+</section>
+
+<!-- 4. 시험지 미리보기 -->
+<section id="sheet" class="hidden">
+  <div class="toolbar">
+    <button class="link" id="sheetBack">← 돌아가기</button>
+    <div class="toolbar-right">
+      <button id="reshuffle" class="btn small secondary">🔀 다시 섞기</button>
+      <button id="printBtn" class="btn small primary">🖨️ 인쇄 / PDF 저장</button>
+    </div>
+    <p class="toolbar-hint">PDF로 저장하려면 인쇄 창에서 대상(프린터)을 <b>“PDF로 저장”</b>으로 바꾸세요.</p>
+  </div>
+  <div id="pages"></div>
+</section>
+
+<script src="words.js?v=20261105a"></script>
+<script src="app.js?v=20261105a"></script>
+</body>
+</html>
