@@ -10,29 +10,30 @@
 <!-- 수정할 때마다 아래 파일 주소의 ?v= 값을 바꿔야 휴대폰에서도 바로 새 버전이 보인다 -->
 <meta http-equiv="Cache-Control" content="no-cache">
 <title>예일1 단어 테스트</title>
-<link rel="icon" href="flower.svg?v=20261105a" type="image/svg+xml">
+<link rel="icon" href="flower.svg?v=20261105b" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=20261105a">
+<link rel="stylesheet" href="style.css?v=20261105b">
 </head>
 <body>
 
 <!-- 1. 시작 화면 -->
 <section id="home" class="screen">
   <header class="hero">
-    <img class="logo" src="flower.svg?v=20261105a" alt="">
+    <img class="logo" src="flower.svg?v=20261105b" alt="">
     <h1>예일1</h1>
     <p class="sub-title">빠바 동반의어 단어 테스트</p>
-    <p class="desc">범위를 고르고 카드 테스트를 하거나 시험지를 만들어 보세요.</p>
+    <p class="desc">파트를 고르고 카드 테스트를 하거나 시험지를 만들어 보세요.</p>
   </header>
 
   <div class="card">
-    <h2><span class="step">01</span> 범위 선택</h2>
-    <div class="range-row">
-      <label>시작 <select id="dayFrom"></select></label>
-      <label>끝 <select id="dayTo"></select></label>
+    <h2><span class="step">01</span> 파트 선택</h2>
+    <div class="part-tools">
+      <button type="button" class="chip" id="selAll">모두 선택</button>
+      <button type="button" class="chip" id="selNone">모두 해제</button>
     </div>
+    <div id="partList"></div>
     <p class="hint">선택된 단어: <b id="poolCount">0</b>개</p>
 
     <h2><span class="step">02</span> 문제 개수</h2>
@@ -116,7 +117,7 @@
   <div id="pages"></div>
 </section>
 
-<script src="words.js?v=20261105a"></script>
-<script src="app.js?v=20261105a"></script>
+<script src="words.js?v=20261105b"></script>
+<script src="app.js?v=20261105b"></script>
 </body>
 </html>

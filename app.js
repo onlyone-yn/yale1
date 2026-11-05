@@ -17,35 +17,63 @@ function show(id) {
   window.scrollTo(0, 0);
 }
 
-/* ---------- 시작 화면 ---------- */
+/* ---------- 시작 화면: 파트 고르기 ---------- */
+// 항목 이름 "2-3 기출예제1번" → 묶음 "2-3", 파트 "기출예제1번"
+const PARTS = DAYS.map((d) => {
+  const name = dayLabel(d);
+  const i = name.indexOf(' ');
+  return { id: d, group: i > 0 ? name.slice(0, i) : name, part: i > 0 ? name.slice(i + 1) : name };
+});
+const GROUP_NAMES = [...new Set(PARTS.map((p) => p.group))];
+
 function fillDays() {
-  for (const sel of [$('dayFrom'), $('dayTo')]) {
-    sel.innerHTML = DAYS.map((d) => `<option value="${d}">${dayLabel(d)}</option>`).join('');
-  }
-  $('dayFrom').value = DAYS[0];
-  $('dayTo').value = DAYS[0];
+  $('partList').innerHTML = GROUP_NAMES.map((g) => `
+    <div class="part-group">
+      <div class="pg-head">
+        <span class="pg-name">${g}</span>
+        <button type="button" class="pg-all" data-group="${g}">전체</button>
+      </div>
+      <div class="pg-parts">
+        ${PARTS.filter((p) => p.group === g).map((p) => `
+          <label class="part"><input type="checkbox" value="${p.id}"><span>${p.part}</span></label>`).join('')}
+      </div>
+    </div>`).join('');
 }
 
-function range() {
-  let a = +$('dayFrom').value, b = +$('dayTo').value;
-  if (a > b) [a, b] = [b, a];
-  return [a, b];
+const boxes = () => [...document.querySelectorAll('#partList input')];
+function selected() {
+  return boxes().filter((b) => b.checked).map((b) => +b.value);
+}
+function setSelected(ids) {
+  boxes().forEach((b) => (b.checked = ids.includes(+b.value)));
 }
 function pool() {
-  const [a, b] = range();
-  return WORDS.filter((w) => w[0] >= a && w[0] <= b);
+  const ids = new Set(selected());
+  return WORDS.filter((w) => ids.has(w[0]));
 }
+// 시험지 머리글에 쓸 범위 글자: "2-3 전체 / 미니3회 1번, 3번"
 function rangeText() {
-  const [a, b] = range();
-  return a === b ? dayLabel(a) : `${dayLabel(a)} ~ ${dayLabel(b)}`;
+  const ids = new Set(selected());
+  if (ids.size === PARTS.length) return '전체';
+  const parts = GROUP_NAMES.map((g) => {
+    const all = PARTS.filter((p) => p.group === g);
+    const on = all.filter((p) => ids.has(p.id));
+    if (!on.length) return '';
+    return on.length === all.length ? `${g} 전체` : `${g} ${on.map((p) => p.part).join(', ')}`;
+  }).filter(Boolean);
+  const text = parts.join(' / ');
+  return text.length > 55 ? `${ids.size}개 파트` : text;
 }
 
 function updateCount() {
   const n = pool().length;
   $('poolCount').textContent = n;
+  $('startTest').disabled = $('makeSheet').disabled = n === 0;
+  syncGroupButtons();
   $('count').max = n;
   const c = +$('count').value;
-  $('countWarn').textContent = c > n ? `범위 안의 단어가 ${n}개라서 ${n}개만 출제돼요.` : '';
+  $('countWarn').textContent = n === 0 ? '위에서 파트를 하나 이상 골라 주세요.'
+    : c > n ? `선택한 단어가 ${n}개라서 ${n}개만 출제돼요.` : '';
 }
 
 function wantedCount() {
@@ -54,14 +82,23 @@ function wantedCount() {
   return Math.max(1, Math.min(c, n));
 }
 
-$('dayFrom').addEventListener('change', () => {
-  if (+$('dayTo').value < +$('dayFrom').value) $('dayTo').value = $('dayFrom').value;
+function syncGroupButtons() {
+  document.querySelectorAll('.pg-all').forEach((btn) => {
+    const bs = boxes().filter((b) => PARTS[+b.value - 1].group === btn.dataset.group);
+    btn.classList.toggle('on', bs.every((b) => b.checked));
+  });
+}
+$('partList').addEventListener('change', updateCount);
+$('partList').addEventListener('click', (e) => {
+  const btn = e.target.closest('.pg-all');
+  if (!btn) return;
+  const bs = boxes().filter((b) => PARTS[+b.value - 1].group === btn.dataset.group);
+  const turnOn = !bs.every((b) => b.checked);
+  bs.forEach((b) => (b.checked = turnOn));
   updateCount();
 });
-$('dayTo').addEventListener('change', () => {
-  if (+$('dayFrom').value > +$('dayTo').value) $('dayFrom').value = $('dayTo').value;
-  updateCount();
-});
+$('selAll').addEventListener('click', () => { setSelected(DAYS); updateCount(); });
+$('selNone').addEventListener('click', () => { setSelected([]); updateCount(); });
 $('count').addEventListener('input', updateCount);
 document.querySelectorAll('.chip[data-n]').forEach((b) =>
   b.addEventListener('click', () => { $('count').value = b.dataset.n; updateCount(); })
@@ -246,10 +283,9 @@ const IN_APP = {
 
 // 지금 고른 범위와 개수를 주소에 담아서, 새 브라우저에서 바로 시험지가 열리게 한다
 function sheetUrl() {
-  const [a, b] = range();
   const u = new URL(location.href);
   u.hash = '';
-  u.search = `?sheet=1&from=${a}&to=${b}&n=${wantedCount()}`;
+  u.search = `?sheet=1&parts=${selected().join(',')}&n=${wantedCount()}`;
   return u.toString();
 }
 
@@ -277,9 +313,10 @@ updateCount();
 (function openSheetFromUrl() {
   const q = new URLSearchParams(location.search);
   if (!q.get('sheet')) return;
-  const a = +q.get('from'), b = +q.get('to'), n = +q.get('n');
-  if (DAYS.includes(a)) $('dayFrom').value = a;
-  if (DAYS.includes(b)) $('dayTo').value = b;
+  const ids = (q.get('parts') || '').split(',').map(Number).filter((d) => DAYS.includes(d));
+  const n = +q.get('n');
+  if (!ids.length) return;
+  setSelected(ids);
   if (n > 0) $('count').value = n;
   updateCount();
   makeSheet();

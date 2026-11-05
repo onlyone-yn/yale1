@@ -231,8 +231,24 @@ button { font-family: inherit; cursor: pointer; }
   .btn.mark { font-size: 15px; }
 }
 
-/* 항목 이름이 길어서 시작/끝을 한 줄씩 */
-.range-row { display: grid; gap: 8px; }
-.range-row label { display: grid; grid-template-columns: 34px 1fr; }
-.range-row select { width: 100%; }
+/* 파트 고르기 */
+.part-tools { display: flex; gap: 8px; margin-bottom: 12px; }
+.part-group { padding: 10px 0; border-top: 1px solid var(--line); }
+.part-group:first-child { border-top: none; padding-top: 0; }
+.pg-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.pg-name { font-weight: 800; color: var(--dark); font-size: 15px; }
+.pg-all {
+  border: 1px solid var(--bg-mid); background: #fff; color: var(--sub);
+  border-radius: 14px; padding: 3px 10px; font-size: 13px; font-weight: 700;
+}
+.pg-all.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pg-parts { display: flex; flex-wrap: wrap; gap: 6px; }
+.part { cursor: pointer; }
+.part input { position: absolute; opacity: 0; pointer-events: none; }
+.part span {
+  display: inline-block; padding: 7px 12px; border-radius: 18px;
+  border: 1px solid var(--bg-mid); background: #fff; font-size: 14px; color: var(--text);
+}
+.part input:checked + span { background: var(--bg-mid); border-color: var(--point); color: var(--accent); font-weight: 700; }
+.part input:focus-visible + span { outline: 2px solid var(--point); }
 .page-head h3 .range { font-size: 13pt; }
